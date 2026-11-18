@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FundiLink – Find trusted local fundis</title>
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--tx:#1d2420;--mu:#5f6b64;--br:#e2ded3;--ac:#1f7a4d;--ac2:#fff;--wa:#c77d0a;--rd:#b3382c;--page-wash:rgba(247,245,240,.72);--hero-bg:rgba(255,255,255,.9);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151a17;--card:#1e2521;--tx:#eef2ee;--mu:#9fada5;--br:#323b35;--ac:#4cc084;--ac2:#0c1a12;--wa:#e8a84a;--rd:#ef7f72;--page-wash:rgba(21,26,23,.72);--hero-bg:rgba(30,37,33,.92);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151a17;--card:#1e2521;--tx:#eef2ee;--mu:#9fada5;--br:#323b35;--ac:#4cc084;--ac2:#0c1a12;--wa:#e8a84a;--rd:#ef7f72;--page-wash:rgba(21,26,23,.72);--hero-bg:rgba(30,37,33,.92);color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:linear-gradient(var(--page-wash),var(--page-wash)),url("assets/fundilink-background.jfif") center center/cover fixed no-repeat;color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);border-bottom:1px solid var(--br);z-index:5}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;line-height:1;color:var(--ac);white-space:nowrap}
+.logo-name{font-size:clamp(1.9rem,4vw,2.4rem);font-weight:900;letter-spacing:-.045em;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+.logo-mark{width:44px;height:46px;display:grid;align-content:center;justify-items:center;gap:1px;border-radius:12px;background:linear-gradient(145deg,#238654,#145b39);box-shadow:0 3px 8px rgba(17,68,43,.24);line-height:1}
+.logo-wrench{font-size:1.35rem}
+.logo-flag{font-size:1rem}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;color:var(--tx);padding:8px 12px;border-radius:8px;font:inherit;font-size:.95rem;cursor:pointer}
+nav button.on{background:var(--ac);color:var(--ac2)}
+.hero{padding:36px 16px 18px;background:var(--hero-bg);border-radius:14px;margin:12px 0}
+.hero h1{font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.15;margin:0 0 8px}
+.hero p{color:var(--mu);margin:0 0 16px;max-width:560px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.chip{border:1px solid var(--br);background:var(--card);color:var(--tx);padding:6px 12px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer}
+.chip.on{background:var(--ac);color:var(--ac2);border-color:var(--ac)}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--br);border-radius:8px;background:var(--card);color:var(--tx);font:inherit}
+label{display:block;font-size:.85rem;color:var(--mu);margin:10px 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding-bottom:40px}
+.card{background:var(--card);border:1px solid var(--br);border-radius:14px;padding:16px}
+.row{display:flex;gap:12px;align-items:center}
+.av{width:48px;height:48px;border-radius:50%;background:var(--ac);color:var(--ac2);display:grid;place-items:center;font-weight:700;flex:none}
+.card h3{margin:0;font-size:1.05rem}.mu{color:var(--mu);font-size:.88rem}
+.star{color:var(--wa)}
+.tag{display:inline-block;font-size:.78rem;border:1px solid var(--br);border-radius:6px;padding:1px 8px;margin:2px 4px 2px 0;color:var(--mu)}
+.ok{color:var(--ac);font-weight:600}.no{color:var(--rd)}
+.btn{background:var(--ac);color:var(--ac2);border:0;padding:9px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.o{background:none;color:var(--ac);border:1px solid var(--ac)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.view{display:none;padding-bottom:40px}.view.on{display:block}
+.form{max-width:560px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+dialog{border:0;border-radius:14px;padding:20px;max-width:520px;width:calc(100% - 24px);background:var(--card);color:var(--tx);max-height:88vh;overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.rev{border-top:1px solid var(--br);padding:8px 0;font-size:.92rem}
+.stars button{background:none;border:0;font-size:1.7rem;color:var(--br);cursor:pointer;padding:0 2px}.stars button.on{color:var(--wa)}
+.st{font-size:.78rem;padding:2px 8px;border-radius:99px;border:1px solid var(--br)}
+footer{border-top:1px solid var(--br);padding:20px 0;color:var(--mu);font-size:.85rem;text-align:center}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+@media(max-width:680px){
+  .bar{align-items:flex-start}
+  nav{width:100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+  nav button{white-space:nowrap;flex:none}
+  .hero{padding-top:24px}
+  .filters{grid-template-columns:1fr 1fr}
+  .filters #q,.filters #loc{grid-column:span 2}
+  .grid{grid-template-columns:1fr}
+  .acts>*{flex:1 1 auto;text-align:center}
+}
+.notice{padding:10px 12px;border:1px solid var(--br);border-radius:8px;margin:12px 0;background:var(--card)}
+.notice.error{border-color:var(--rd);color:var(--rd)}
+.notice:empty{display:none}
+button:disabled{opacity:.6;cursor:wait}
+.admin-users{display:grid;gap:10px}
+.admin-user{border:1px solid var(--br);border-radius:10px;padding:12px}
+.admin-user .row{justify-content:space-between;align-items:flex-start}
+.admin-user h3{margin:0}
+.admin-user .acts{margin-top:8px}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0 20px}
+.admin-stat{background:var(--card);border:1px solid var(--br);border-radius:12px;padding:16px}
+.admin-stat strong{display:block;font-size:1.6rem;color:var(--ac)}
+.admin-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px}
+.admin-table{display:block;width:100%;max-width:100%;overflow-x:auto;border-collapse:collapse;font-size:.9rem}
+.admin-table th,.admin-table td{text-align:left;padding:8px;border-bottom:1px solid var(--br);vertical-align:top}
+.admin-table th{color:var(--mu);font-weight:600}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+<div class="logo"><span class="logo-mark" aria-hidden="true"><span class="logo-wrench">🔧</span><span class="logo-flag">🇰🇪</span></span><span class="logo-name">FundiLink</span></div>
+<nav id="nav">
+<button data-v="find" class="on">Find a fundi</button>
+<button data-v="post">Post a job</button>
+<button data-v="jobs">Job board</button>
+<button data-v="join">Join as fundi</button>
+<button data-v="book">My bookings</button>
+<button data-v="account">Account</button>
+<button data-v="admin" hidden>Admin</button>
+</nav></div></header>
+
+<main class="wrap">
+<div class="notice" id="notice" role="status" aria-live="polite"></div>
+<section class="view on" id="v-find">
+<div class="hero"><h1>Skilled hands, close to home.</h1><p>Browse verified masons, plumbers, electricians, mechanics and more. Check ratings, then book directly.</p></div>
+<div class="chips" id="chips"></div>
+<div class="filters">
+<input id="q" placeholder="Search name or skill…">
+<input id="loc" placeholder="Town / area (e.g. Thika)">
+<select id="sort"><option value="r">Top rated</option><option value="p">Lowest rate</option><option value="e">Most experienced</option></select>
+<label style="margin:0;display:flex;gap:8px;align-items:center;color:var(--tx)"><input type="checkbox" id="ver" style="width:auto"> Verified only</label>
+</div>
+<div class="grid" id="workers"></div>
+</section>
+
+<section class="view" id="v-post"><div class="hero"><h1>Post a job request</h1><p>Describe the work and fundis in your area will contact you.</p></div>
+<form class="form card" id="jobForm">
+<p class="mu">Your name and phone number come from your signed-in customer account.</p>
+<div class="two"><div><label>Trade needed</label><select name="trade" class="trades"></select></div>
+<div><label>Location</label><input name="loc" placeholder="Town / estate" required></div></div>
+<div class="two"><div><label>When</label><input name="when" type="date" required></div>
+<div><label>Budget (KES, optional)</label><input name="budget" type="number" min="0"></div></div>
+<label>What needs doing?</label><textarea name="desc" rows="4" required placeholder="e.g. Leaking kitchen sink pipe, needs replacing"></textarea>
+<div class="acts"><button class="btn" type="submit">Post job</button></div>
+</form></section>
+
+<section class="view" id="v-jobs"><div class="hero"><h1>Open job requests</h1><p>For fundis: find work near you and contact the client.</p></div>
+<div class="filters"><select id="jtrade"></select></div>
+<div class="grid" id="jobList"></div></section>
+
+<section class="view" id="v-join"><div class="hero"><h1>Create your fundi profile</h1><p>Show your skills and get found by clients. New profiles start as “Pending verification” until ID and a reference are checked.</p></div>
+<p class="mu" id="joinState" aria-live="polite"></p>
+<form class="form card" id="joinForm">
+<label>Full name</label><input name="name" required>
+<label>Phone</label><input name="phone" type="tel" required>
+<label>Password (at least 8 characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">
+<div class="two"><div><label>Trade</label><select name="trade" class="trades"></select></div>
+<div><label>Years of experience</label><input name="exp" type="number" min="0" max="60" required></div></div>
+<div class="two"><div><label>Service area</label><input name="area" placeholder="e.g. Thika, Juja" required></div>
+<div><label>Rate (KES per day)</label><input name="rate" type="number" min="0" required></div></div>
+<label>Skills (comma separated)</label><input name="skills" placeholder="tiling, piping, plastering" required>
+<label>About you</label><textarea name="bio" rows="3"></textarea>
+<label>Past work photos</label><input type="file" accept="image/*" multiple disabled>
+<div class="mu">Photo and ID upload connect to a backend in the full version.</div>
+<div class="acts"><button class="btn" type="submit">Create profile</button></div>
+</form></section>
+
+<section class="view" id="v-book"><div class="hero"><h1>My bookings</h1><p>Track requests, confirm as a fundi, mark complete, and leave a rating.</p></div>
+<div class="grid" id="bookList"></div></section>
+
+<section class="view" id="v-account"><div class="hero"><h1 id="accountHeading">Your FundiLink account</h1><p id="accountIntro">Sign in as a customer or create an account to manage your bookings and job requests.</p></div>
+<div class="card" id="accountStatus" aria-live="polite"></div>
+<div id="authForms">
+<form class="form card" id="loginForm">
+<h3>Sign in</h3>
+<label>Email or phone</label><input name="identifier" type="text" autocomplete="username" placeholder="admin@example.com or 0712 345 678" required>
+<label>Password</label><input name="password" type="password" autocomplete="current-password" required>
+<div class="acts"><button class="btn" type="submit">Sign in</button></div>
+</form>
+<form class="form card" id="clientRegisterForm">
+<h3>Create a customer account</h3>
+<label>Full name</label><input name="name" required>
+<label>Phone</label><input name="phone" type="tel" autocomplete="tel" required>
+<label>Email (optional)</label><input name="email" type="email" autocomplete="email">
+<label>Password (at least 8 characters)</label><input name="password" type="password" minlength="8" autocomplete="new-password" required>
+<div class="acts"><button class="btn" type="submit">Create account</button></div>
+</form>
+<p class="mu">To join as a fundi, use “Join as fundi” and create a worker account there.</p>
+</div>
+<div id="signedIn" hidden><div class="acts"><button class="btn o" id="logoutBtn" type="button">Sign out</button></div></div>
+</section>
+
+<section class="view" id="v-admin">
+<div class="hero"><h1>Admin dashboard</h1><p>Live overview of accounts, jobs, bookings, and customer reviews.</p></div>
+<div id="dashboardLoading" class="mu">Loading dashboard…</div>
+<div id="dashboardContent" hidden>
+<div class="admin-stats" id="adminStats"></div>
+<div class="admin-columns">
+<div class="card"><h2>Recent users</h2><div id="recentUsers"></div></div>
+<div class="card"><h2>Booking activity</h2><div id="bookingActivity"></div></div>
+<div class="card"><h2>Recent jobs</h2><div id="recentJobs"></div></div>
+<div class="card"><h2>Recent reviews</h2><div id="recentReviews"></div></div>
+</div>
+<div class="acts"><button class="btn o" id="refreshDashboard" type="button">Refresh dashboard</button></div>
+<div class="card" id="adminTools" hidden>
+<h2>Manage user accounts</h2>
+<p class="mu">Deactivate an account to block sign-in while preserving its profile, bookings, and reviews. Reactivation restores access.</p>
+<div class="acts"><button class="btn o" id="refreshAdminUsers" type="button">Refresh users</button></div>
+<div id="adminUsers" class="admin-users" aria-live="polite"></div>
+</div>
+</div>
+</section>
+</main>
+
+<footer>FundiLink · <a href="#" id="theme" style="color:var(--ac)">Toggle theme</a></footer>
+
+<dialog id="dlg"></dialog>
+
+<script>
+var TRADES=["Plumber","Electrician","Mason","Carpenter","Mechanic","Painter","Welder","Tiler"];
+var ICON={Plumber:"🚰",Electrician:"💡",Mason:"🧱",Carpenter:"🪚",Mechanic:"🔧",Painter:"🎨",Welder:"🔥",Tiler:"◻️"};
+var S={workers:[],jobs:[],bookings:[],users:[],user:null,csrf:""};
+function $(i){return document.getElementById(i)}
+function notice(message,isError){$("notice").textContent=message||"";$("notice").classList.toggle("error",!!isError)}
+function api(resource,options){
+options=options||{};
+options.headers=Object.assign({"Accept":"application/json"},options.headers||{});
+if(S.csrf)options.headers["X-CSRF-Token"]=S.csrf;
+if(options.body){options.headers["Content-Type"]="application/json";options.body=JSON.stringify(options.body)}
+var url="api/index.php?resource="+encodeURIComponent(resource)+(options.query||"");
+delete options.query;
+return fetch(url,options).then(function(response){
+return response.text().then(function(text){var data;try{data=JSON.parse(text)}catch(e){throw new Error("The server returned invalid JSON (HTTP "+response.status+").")}
+if(!response.ok)throw new Error(data.error||"The request failed ("+response.status+").");
+return data})}).catch(function(error){if(error instanceof TypeError)throw new Error("Could not reach the PHP API. Run FundiLink through XAMPP Apache, not by opening the HTML file directly.");throw error})
+}
+function loadBookings(){
+if(!S.user)return Promise.resolve();
+$("bookList").innerHTML="<p class='mu'>Loading bookings…</p>";
+return api("bookings").then(function(result){S.bookings=result.bookings||[];renderBook()})
+.catch(function(error){$("bookList").innerHTML="<p class='mu'>Bookings could not be loaded. Please try again.</p>";notice(error.message,true);throw error})
+}
+function refreshData(){
+if($("bookList"))$("bookList").innerHTML="<p class='mu'>Loading bookings…</p>";
+return api("bootstrap").then(function(data){
+S={workers:data.workers||[],jobs:data.jobs||[],bookings:[],user:data.user||null,csrf:data.csrf||""};
+return S.user?api("bookings").then(function(result){S.bookings=result.bookings||[]}):null;
+}).then(function(){
+notice("");renderW();renderJobs();renderBook();renderAccount();renderJoinState();
+}).catch(function(error){notice(error.message,true);$("bookList").innerHTML="<p class='mu'>Bookings could not be loaded. Please try again.</p>";throw error})
+}
+function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML}
+function avg(w){return w.reviews.length?w.reviews.reduce(function(a,r){return a+r.s},0)/w.reviews.length:0}
+function stars(n){var r=Math.round(n);return "<span class='star'>"+"★".repeat(r)+"☆".repeat(5-r)+"</span>"}
+function money(n){return "KES "+Number(n).toLocaleString("en-KE")}
+function opts(sel,all){sel.innerHTML=(all?"<option value=''>All trades</option>":"")+TRADES.map(function(t){return "<option>"+t+"</option>"}).join("")}
+document.querySelectorAll(".trades").forEach(function(s){opts(s)});
+opts($("jtrade"),true);
+var trade="";
+function chips(){$("chips").innerHTML=["All"].concat(TRADES).map(function(t){var on=(t==="All"&&!trade)||t===trade;return "<button class='chip"+(on?" on":"")+"' data-t='"+t+"'>"+(ICON[t]||"")+" "+t+"</button>"}).join("");}
+$("chips").onclick=function(e){var t=e.target.dataset.t;if(!t)return;trade=t==="All"?"":t;chips();renderW()};
+function renderW(){
+var q=$("q").value.toLowerCase(),l=$("loc").value.toLowerCase(),v=$("ver").checked;
+var list=S.workers.filter(function(w){return(!trade||w.trade===trade)&&(!v||w.verified)&&(!l||w.area.toLowerCase().indexOf(l)>-1)&&(!q||(w.name+" "+w.skills.join(" ")+" "+w.trade).toLowerCase().indexOf(q)>-1)});
+var s=$("sort").value;
+list.sort(function(a,b){return s==="p"?a.rate-b.rate:s==="e"?b.exp-a.exp:avg(b)-avg(a)});
+$("workers").innerHTML=list.length?list.map(function(w){
+return "<div class='card'><div class='row'><div class='av'>"+esc(w.name[0])+"</div><div><h3>"+esc(w.name)+"</h3><div class='mu'>"+ICON[w.trade]+" "+esc(w.trade)+" · "+esc(w.area)+"</div></div></div>"+
+"<div style='margin:10px 0 4px'>"+stars(avg(w))+" <span class='mu'>"+(w.reviews.length?avg(w).toFixed(1)+" ("+w.reviews.length+")":"No reviews yet")+"</span></div>"+
+"<div>"+w.skills.map(function(k){return "<span class='tag'>"+esc(k)+"</span>"}).join("")+"</div>"+
+"<div class='mu' style='margin-top:6px'>"+money(w.rate)+"/day · "+w.exp+" yrs · <span class='"+(w.verified?"ok":"")+"'>"+(w.verified?"✔ Verified":"Pending verification")+"</span></div>"+
+"<div class='acts'><button class='btn' onclick='profile("+w.id+")'>View profile</button><button class='btn o' onclick='bookForm("+w.id+")'>Book</button></div></div>"}).join(""):"<p class='mu'>No fundis match your filters yet.</p>"}
+["q","loc","ver","sort"].forEach(function(i){$(i).oninput=renderW});
+function dlg(h){$("dlg").innerHTML=h+"<div class='acts'><button class='btn o' onclick='$(\"dlg\").close()'>Close</button></div>";if(!$("dlg").open)$("dlg").showModal()}
+function profile(id){var w=S.workers.filter(function(x){return x.id===id})[0];
+dlg("<div class='row'><div class='av'>"+esc(w.name[0])+"</div><div><h3>"+esc(w.name)+"</h3><div class='mu'>"+ICON[w.trade]+" "+esc(w.trade)+" · "+esc(w.area)+"</div></div></div>"+
+"<p>"+esc(w.bio)+"</p><div>"+stars(avg(w))+" "+(w.reviews.length?avg(w).toFixed(1):"New")+"</div>"+
+"<p class='mu'>"+money(w.rate)+"/day · "+w.exp+" years · "+(w.verified?"<span class='ok'>ID & reference verified</span>":"Verification pending")+"</p>"+
+"<div>"+w.skills.map(function(k){return "<span class='tag'>"+esc(k)+"</span>"}).join("")+"</div>"+
+"<div class='acts'><a class='btn' href='tel:"+esc(w.phone)+"'>📞 Call</a><a class='btn o' href='https://wa.me/"+esc(waPhone(w.phone))+"' target='_blank' rel='noopener'>WhatsApp</a><button class='btn o' onclick='bookForm("+w.id+")'>Book now</button></div>"+
+"<h4>Reviews</h4>"+(w.reviews.length?w.reviews.map(function(r){return "<div class='rev'>"+stars(r.s)+" "+esc(r.t)+"</div>"}).join(""):"<div class='mu'>No reviews yet.</div>"))}
+function waPhone(phone){var digits=String(phone||"").replace(/\D/g,"");return digits.indexOf("0")===0?"254"+digits.slice(1):digits}
+function bookForm(id){var w=S.workers.filter(function(x){return x.id===id})[0];
+if(!S.user||S.user.role!=="client"){notice("Sign in as a customer to request a booking.",true);go("account");return}
+dlg("<h3>Book "+esc(w.name)+"</h3><p class='mu'>Requesting as "+esc(S.user.name)+" · "+esc(S.user.phone)+"</p><form id='bf'><label>Date</label><input name='when' type='date' required><label>Job details</label><textarea name='desc' rows='3' required></textarea><div class='acts'><button class='btn' type='submit'>Send booking request</button></div></form>");
+$("bf").onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);
+api("bookings",{method:"POST",body:{wid:id,when:f.get("when"),desc:f.get("desc")}})
+.then(function(){$("dlg").close();return refreshData()}).then(function(){go("book");notice("Booking request sent.",false)})
+.catch(function(error){notice(error.message,true)})}}
+function renderJobs(){var t=$("jtrade").value;
+var l=S.jobs.filter(function(j){return!t||j.trade===t});
+$("jobList").innerHTML=l.length?l.map(function(j){return "<div class='card'><h3>"+ICON[j.trade]+" "+esc(j.trade)+" needed</h3><div class='mu'>📍 "+esc(j.loc)+" · 📅 "+esc(j.when)+"</div><p>"+esc(j.desc)+"</p><div class='mu'>Budget: "+(Number(j.budget)?money(j.budget):"Negotiable")+" · Posted by "+esc(j.name)+"</div><div class='acts'><a class='btn' href='tel:"+esc(j.phone)+"'>📞 Contact client</a></div></div>"}).join(""):"<p class='mu'>No open jobs for this trade.</p>"}
+$("jtrade").onchange=renderJobs;
+$("jobForm").onsubmit=function(e){e.preventDefault();var f=Object.fromEntries(new FormData(e.target));
+if(!S.user||S.user.role!=="client"){notice("Sign in as a customer before posting a job.",true);go("account");return}
+api("jobs",{method:"POST",body:f}).then(function(){e.target.reset();return refreshData()})
+.then(function(){$("jtrade").value="";go("jobs");notice("Your job request was posted.",false)}).catch(function(error){notice(error.message,true)})};
+$("joinForm").onsubmit=function(e){e.preventDefault();var f=Object.fromEntries(new FormData(e.target));
+if(S.user&&S.user.role!=="worker"){notice("Sign out of your customer account before creating a fundi account.",true);go("account");return}
+var request=S.user?api("workers",{method:"POST",body:f}):api("auth-register",{method:"POST",body:Object.assign({role:"worker"},f)});
+request.then(function(){e.target.reset();return refreshData()})
+.then(function(){trade="";chips();go("find");notice("Your fundi account is ready.",false)}).catch(function(error){notice(error.message,true)})};
+function renderBook(){
+if(!S.user){$("bookList").innerHTML="<div class='card'><p>Sign in to see bookings linked to your account.</p><button class='btn' onclick='go(\"account\")'>Sign in or register</button></div>";return}
+if(!S.bookings.length){$("bookList").innerHTML="<p class='mu'>"+(S.user.role==="worker"?"No booking requests have been sent to your profile yet.":"No bookings yet. Find a fundi and tap Book.")+"</p>";return}
+$("bookList").innerHTML=S.bookings.map(function(b){var w=S.workers.filter(function(x){return x.id===b.wid})[0];if(!w)return"";
+var isWorker=S.user.role==="worker";
+var act=isWorker&&b.status==="pending"?"<button class='btn' onclick='setSt("+b.id+",\"confirmed\")'>Accept</button><button class='btn o' onclick='setSt("+b.id+",\"declined\")'>Decline</button>":
+isWorker&&b.status==="confirmed"?"<button class='btn' onclick='setSt("+b.id+",\"completed\")'>Mark complete</button>":
+!isWorker&&b.status==="completed"&&!b.rated?"<button class='btn' onclick='rate("+b.id+")'>★ Rate this fundi</button>":"";
+var contact=isWorker?b.phone:w.phone;
+return "<div class='card'><div class='row' style='justify-content:space-between'><h3>"+(isWorker?esc(b.name):esc(w.name))+"</h3><span class='st'>"+esc(b.status)+"</span></div><div class='mu'>"+esc(w.trade)+" · "+esc(b.when)+"</div><p>"+esc(b.desc)+"</p><div class='mu'>"+(isWorker?"Customer: "+esc(b.name)+" · "+esc(b.phone):"Service area: "+esc(w.area))+"</div><div class='acts'>"+act+"<a class='btn o' href='tel:"+esc(contact)+"'>📞 Call</a></div></div>"}).join("")}
+function setSt(id,s){api("bookings",{method:"PATCH",query:"&id="+encodeURIComponent(id),body:{status:s}})
+.then(function(){return refreshData()}).then(function(){notice("Booking status updated.",false)}).catch(function(error){notice(error.message,true)})}
+function rate(id){var n=5;
+dlg("<h3>Rate your fundi</h3><div class='stars' id='sr'></div><label>Comment</label><textarea id='rc' rows='3'></textarea><div class='acts'><button class='btn' id='rs'>Submit review</button></div>");
+function draw(){$("sr").innerHTML=[1,2,3,4,5].map(function(i){return "<button class='"+(i<=n?"on":"")+"' data-n='"+i+"'>★</button>"}).join("")}
+draw();$("sr").onclick=function(e){if(e.target.dataset.n){n=+e.target.dataset.n;draw()}};
+$("rs").onclick=function(){api("reviews",{method:"POST",body:{bookingId:id,stars:n,comment:$("rc").value}})
+.then(function(){$("dlg").close();return refreshData()}).catch(function(error){notice(error.message,true)})}}
+function renderAdminUsers(){
+$("adminUsers").innerHTML=S.users.length?S.users.map(function(user){
+var role=user.role==="worker"?"Fundi":user.role==="admin"?"Admin":"Customer";
+var detail=user.trade?esc(user.trade)+(user.area?" · "+esc(user.area):""):"";
+var action=user.active?"<button class='btn o' data-user-id='"+user.id+"' data-active='false' "+(user.id===S.user.id?"disabled title='You cannot deactivate your own account'":"")+">Deactivate</button>":
+"<button class='btn' data-user-id='"+user.id+"' data-active='true'>Reactivate</button>";
+return "<div class='admin-user'><div class='row'><div><h3>"+esc(user.name)+" <span class='st'>"+role+"</span></h3><div class='mu'>"+esc(user.email||user.phone||"No contact details")+" · "+(user.active?"Active":"Deactivated")+"</div>"+(detail?"<div class='mu'>"+detail+"</div>":"")+"<div class='mu'>Joined "+esc(user.created_at)+"</div></div>"+action+"</div></div>"
+}).join(""):"<p class='mu'>No registered accounts yet.</p>";
+}
+function loadAdminUsers(){
+$("adminUsers").innerHTML="<p class='mu'>Loading user accounts…</p>";
+return api("admin-users").then(function(data){S.users=data.users||[];renderAdminUsers()})
+.catch(function(error){$("adminUsers").innerHTML="<p class='mu'>User accounts could not be loaded.</p>";notice(error.message,true);throw error})
+}
+function setUserActive(id,active){
+if(!window.confirm(active?"Reactivate this account?":"Deactivate this account? The account will be blocked from signing in, but its data will be preserved."))return;
+api("admin-users",{method:"PATCH",query:"&id="+encodeURIComponent(id),body:{active:active}})
+.then(function(){return loadAdminUsers()})
+.then(function(){notice(active?"Account reactivated.":"Account deactivated.",false)})
+.catch(function(error){notice(error.message,true)})
+}
+function loadAdminDashboard(){
+if(!S.user||S.user.role!=="admin")return Promise.resolve();
+$("dashboardLoading").hidden=false;
+$("dashboardLoading").textContent="Loading dashboard…";
+$("dashboardContent").hidden=true;
+return api("admin-dashboard").then(function(data){
+var stats=data.stats||{};
+var cards=[["Total users",stats.total_users],["Active accounts",stats.active_users],["Active fundis",stats.active_fundis],["Open jobs",stats.open_jobs],["Total bookings",stats.total_bookings],["Pending bookings",stats.pending_bookings],["Completed bookings",stats.completed_bookings],["Reviews",stats.total_reviews]];
+$("adminStats").innerHTML=cards.map(function(card){return "<div class='admin-stat'><strong>"+Number(card[1]||0).toLocaleString()+"</strong><span>"+card[0]+"</span></div>"}).join("");
+var users=data.recentUsers||[];
+$("recentUsers").innerHTML=users.length?"<table class='admin-table'><thead><tr><th>User</th><th>Role</th><th>State</th></tr></thead><tbody>"+users.map(function(user){return "<tr><td>"+esc(user.name)+"<br><span class='mu'>"+esc(user.email||user.phone||"")+"</span></td><td>"+esc(user.role)+"</td><td>"+(Number(user.active)?"Active":"Deactivated")+"</td></tr>"}).join("")+"</tbody></table>":"<p class='mu'>No users registered.</p>";
+var bookings=data.recentBookings||[],statusCounts=data.bookingStatuses||[];
+$("bookingActivity").innerHTML="<p>"+statusCounts.map(function(item){return "<span class='tag'>"+esc(item.status)+": "+Number(item.count)+"</span>"}).join(" ")+"</p>"+
+(bookings.length?"<table class='admin-table'><thead><tr><th>Booking</th><th>Fundi</th><th>Status</th></tr></thead><tbody>"+bookings.map(function(item){return "<tr><td>"+esc(item.client_name)+"<br><span class='mu'>"+esc(item.booking_date)+"</span></td><td>"+esc(item.worker_name)+" · "+esc(item.trade)+"</td><td>"+esc(item.status)+"</td></tr>"}).join("")+"</tbody></table>":"<p class='mu'>No booking activity yet.</p>");
+var jobs=data.recentJobs||[];
+$("recentJobs").innerHTML=jobs.length?"<div class='admin-users'>"+jobs.map(function(job){var action=job.status==="open"?"<button class='btn o' data-job-id='"+job.id+"' data-job-status='closed'>Close job</button>":"<button class='btn' data-job-id='"+job.id+"' data-job-status='open'>Reopen job</button>";
+return "<div class='admin-user'><div class='row'><div><h3>"+esc(job.trade)+" · "+esc(job.location)+"</h3><div class='mu'>"+esc(job.client_name)+" · "+esc(job.job_date)+" · "+esc(job.status)+"</div><p>"+esc(job.description)+"</p></div>"+action+"</div></div>"}).join("")+"</div>":"<p class='mu'>No jobs posted yet.</p>";
+var reviews=data.recentReviews||[];
+$("recentReviews").innerHTML=reviews.length?reviews.map(function(review){return "<div class='admin-user'>"+stars(Number(review.stars))+" "+esc(review.worker_name)+"<p>"+esc(review.comment)+"</p><div class='mu'>"+esc(review.created_at)+"</div></div>"}).join(""):"<p class='mu'>No reviews yet.</p>";
+$("dashboardLoading").hidden=true;
+$("dashboardContent").hidden=false;
+return loadAdminUsers();
+}).catch(function(error){$("dashboardLoading").hidden=false;$("dashboardLoading").textContent="Dashboard could not be loaded.";notice(error.message,true);throw error})
+}
+function setJobStatus(id,status){
+if(!window.confirm(status==="closed"?"Close this job from the public job board?":"Reopen this job on the public job board?"))return;
+api("admin-jobs",{method:"PATCH",query:"&id="+encodeURIComponent(id),body:{status:status}})
+.then(function(){return loadAdminDashboard()})
+.then(function(){return refreshData()})
+.then(function(){notice(status==="closed"?"Job closed.":"Job reopened.",false)})
+.catch(function(error){notice(error.message,true)})
+}
+$("adminUsers").onclick=function(e){
+var button=e.target.closest("button[data-user-id]");
+if(button&&!button.disabled)setUserActive(Number(button.dataset.userId),button.dataset.active==="true");
+};
+$("recentJobs").onclick=function(e){var button=e.target.closest("button[data-job-id]");if(button)setJobStatus(Number(button.dataset.jobId),button.dataset.jobStatus)};
+$("refreshDashboard").onclick=function(){loadAdminDashboard().catch(function(){})};
+$("refreshAdminUsers").onclick=function(){loadAdminUsers().catch(function(){})};
+function renderAccount(){
+var loggedIn=!!S.user,isAdmin=loggedIn&&S.user.role==="admin";
+$("authForms").hidden=loggedIn;
+$("signedIn").hidden=!loggedIn;
+$("adminTools").hidden=!isAdmin;
+$("nav").querySelector("[data-v='admin']").hidden=!isAdmin;
+$("accountHeading").textContent="Your FundiLink account";
+$("accountIntro").textContent="Sign in as a customer or create an account to manage your bookings and job requests.";
+$("accountStatus").innerHTML=loggedIn?
+"<h3>Signed in as "+esc(S.user.name)+"</h3><p class='mu'>"+esc(S.user.email||S.user.phone||"")+" · "+(S.user.role==="worker"?"Fundi":isAdmin?"Administrator":"Customer")+"</p>"+
+(S.user.role==="worker"&&!S.user.workerId?"<p class='no'>Your account does not have a fundi profile yet. Use Join as fundi to finish setting it up.</p>":""):
+"<p class='mu'>Sign in to see bookings associated with your customer or fundi account.</p>";
+}
+function renderJoinState(){
+var loggedIn=!!S.user;
+$("joinForm").hidden=loggedIn;
+$("joinState").textContent=!loggedIn?"Create a fundi account to publish your profile and receive booking requests.":S.user.role==="worker"?"You are signed in as a fundi. Your profile and booking requests are linked to this account.":"You are signed in as a customer. Sign out from Account before creating a fundi account.";
+}
+$("loginForm").onsubmit=function(e){e.preventDefault();var form=e.target,data=Object.fromEntries(new FormData(form));
+api("auth-login",{method:"POST",body:data}).then(function(){form.reset();return refreshData()})
+.then(function(){go(S.user&&S.user.role==="admin"?"admin":"book");notice("You are signed in.",false)}).catch(function(error){notice(error.message,true)})};
+$("clientRegisterForm").onsubmit=function(e){e.preventDefault();var form=e.target,data=Object.fromEntries(new FormData(form));data.role="client";
+api("auth-register",{method:"POST",body:data}).then(function(){form.reset();return refreshData()})
+.then(function(){go("book");notice("Customer account created.",false)}).catch(function(error){notice(error.message,true)})};
+$("logoutBtn").onclick=function(){api("auth-logout",{method:"POST",body:{}}).then(function(){return refreshData()})
+.then(function(){go("find");notice("You have signed out.",false)}).catch(function(error){notice(error.message,true)})};
+function go(v){var targetView=v;
+document.querySelectorAll(".view").forEach(function(s){s.classList.toggle("on",s.id==="v-"+targetView)});
+document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v)});
+if(v==="jobs")renderJobs();if(v==="book"){renderBook();if(S.user)loadBookings().catch(function(){})}if(v==="find")renderW();if(v==="account")renderAccount();if(v==="admin"){if(!S.user||S.user.role!=="admin"){notice("Administrator sign-in is required.",true);targetView="account";document.querySelectorAll(".view").forEach(function(s){s.classList.toggle("on",s.id==="v-account")});renderAccount()}else{loadAdminDashboard().catch(function(){})}}if(v==="join")renderJoinState();window.scrollTo(0,0)}
+$("nav").onclick=function(e){if(e.target.dataset.v)go(e.target.dataset.v)};
+$("theme").onclick=function(e){e.preventDefault();var d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=dark?"light":"dark"};
+var t=new Date().toISOString().slice(0,10);document.querySelectorAll("input[type=date]").forEach(function(i){i.min=t});
+chips();notice("Connecting to the FundiLink backend…");refreshData().catch(function(){});
+</script>
+</body>
+</html>
