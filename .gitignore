@@ -1,5 +1,6 @@
 .env
 .env.*
 !.env.example
+api/config.local.php
 *.log
 *.sql.gz
