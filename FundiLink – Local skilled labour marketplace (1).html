@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--br);padding:20px 0;color:var(--mu);font-size:.
 @media(max-width:680px){
   .bar{align-items:center}
   .nav-toggle{display:inline-flex}
-  #nav{display:none;width:100%;grid-template-columns:minmax(0,1fr);gap:4px;padding:8px;background:var(--card);border:1px solid var(--br);border-radius:12px}
+  #nav{display:none;width:100%;max-height:calc(100vh - 100px);grid-template-columns:minmax(0,1fr);gap:4px;padding:8px;background:var(--card);border:1px solid var(--br);border-radius:12px;overflow-y:auto;overscroll-behavior:contain}
   .bar.menu-open #nav{display:grid}
   #nav button{width:100%;min-width:0;min-height:48px;padding:12px;white-space:normal;line-height:1.25;background:var(--bg);border:1px solid var(--br);text-align:left}
   #nav button.on{background:var(--ac);border-color:var(--ac);color:var(--ac2)}
@@ -67,6 +67,9 @@ footer{border-top:1px solid var(--br);padding:20px 0;color:var(--mu);font-size:.
   .filters #q,.filters #loc{grid-column:span 2}
   .grid{grid-template-columns:1fr}
   .acts>*{flex:1 1 auto;text-align:center}
+}
+@supports (height:100dvh){
+  @media(max-width:680px){#nav{max-height:calc(100dvh - 100px)}}
 }
 .notice{padding:10px 12px;border:1px solid var(--br);border-radius:8px;margin:12px 0;background:var(--card)}
 .notice.error{border-color:var(--rd);color:var(--rd)}
