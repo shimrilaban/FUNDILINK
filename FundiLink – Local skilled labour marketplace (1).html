@@ -58,9 +58,9 @@ footer{border-top:1px solid var(--br);padding:20px 0;color:var(--mu);font-size:.
 @media(max-width:680px){
   .bar{align-items:center}
   .nav-toggle{display:inline-flex}
-  #nav{display:none;width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px;background:var(--card);border:1px solid var(--br);border-radius:12px}
+  #nav{display:none;width:100%;grid-template-columns:minmax(0,1fr);gap:4px;padding:8px;background:var(--card);border:1px solid var(--br);border-radius:12px}
   .bar.menu-open #nav{display:grid}
-  #nav button{min-width:0;min-height:48px;padding:10px 8px;white-space:normal;line-height:1.25;background:var(--bg);border:1px solid var(--br);text-align:center}
+  #nav button{width:100%;min-width:0;min-height:48px;padding:12px;white-space:normal;line-height:1.25;background:var(--bg);border:1px solid var(--br);text-align:left}
   #nav button.on{background:var(--ac);border-color:var(--ac);color:var(--ac2)}
   .hero{padding-top:24px}
   .filters{grid-template-columns:1fr 1fr}
