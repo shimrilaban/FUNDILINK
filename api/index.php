@@ -37,12 +37,18 @@ function worker_profile_values(array $data, string $name, string $phone): array
 
 try {
     if ($resource === 'bootstrap' && $method === 'GET') {
+        $user = current_user($pdo);
+        $workerFields = 'id, name, trade, area, rate, experience AS exp, verified';
+        if ($user) {
+            $workerFields .= ', phone';
+        }
+        $workerFields .= ', skills, bio';
         $workers = $pdo->query(
-            'SELECT id, name, trade, area, rate, experience AS exp, verified, phone, skills, bio
+            "SELECT {$workerFields}
              FROM workers
              WHERE user_id IS NULL
                 OR EXISTS (SELECT 1 FROM users u WHERE u.id = workers.user_id AND u.is_active = 1)
-             ORDER BY id DESC'
+             ORDER BY id DESC"
         )->fetchAll();
         $reviews = $pdo->query(
             'SELECT worker_id, stars AS s, comment AS t FROM reviews ORDER BY id'
@@ -70,8 +76,13 @@ try {
             }
         }
 
+        $jobFields = 'id, name';
+        if ($user) {
+            $jobFields .= ', phone';
+        }
+        $jobFields .= ', trade, location AS loc, job_date AS `when`, budget, description AS `desc`';
         $jobs = $pdo->query(
-            "SELECT id, name, phone, trade, location AS loc, job_date AS `when`, budget, description AS `desc`
+            "SELECT {$jobFields}
              FROM jobs
              WHERE status = 'open'
                AND (client_id IS NULL OR EXISTS (
@@ -85,7 +96,6 @@ try {
         }
         unset($job);
 
-        $user = current_user($pdo);
         respond(200, [
             'workers' => $workers,
             'jobs' => $jobs,

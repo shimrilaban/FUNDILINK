@@ -18,6 +18,10 @@ header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);b
 .logo-mark{width:44px;height:46px;display:grid;align-content:center;justify-items:center;gap:1px;border-radius:12px;background:linear-gradient(145deg,#238654,#145b39);box-shadow:0 3px 8px rgba(17,68,43,.24);line-height:1}
 .logo-wrench{font-size:1.35rem}
 .logo-flag{font-size:1rem}
+.nav-toggle{display:none;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border:1px solid var(--br);border-radius:10px;background:var(--card);color:var(--tx);font:inherit;font-weight:650;cursor:pointer}
+.nav-toggle:focus-visible,#nav button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.nav-toggle-icon{width:18px;height:12px;display:block;position:relative;border-top:2px solid currentColor;border-bottom:2px solid currentColor}
+.nav-toggle-icon:after{content:"";position:absolute;top:3px;left:0;right:0;border-top:2px solid currentColor}
 nav{display:flex;gap:4px;flex-wrap:wrap}
 nav button{background:none;border:0;color:var(--tx);padding:8px 12px;border-radius:8px;font:inherit;font-size:.95rem;cursor:pointer}
 nav button.on{background:var(--ac);color:var(--ac2)}
@@ -52,9 +56,12 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 footer{border-top:1px solid var(--br);padding:20px 0;color:var(--mu);font-size:.85rem;text-align:center}
 @media(max-width:520px){.two{grid-template-columns:1fr}}
 @media(max-width:680px){
-  .bar{align-items:flex-start}
-  nav{width:100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
-  nav button{white-space:nowrap;flex:none}
+  .bar{align-items:center}
+  .nav-toggle{display:inline-flex}
+  #nav{display:none;width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px;background:var(--card);border:1px solid var(--br);border-radius:12px}
+  .bar.menu-open #nav{display:grid}
+  #nav button{min-width:0;min-height:48px;padding:10px 8px;white-space:normal;line-height:1.25;background:var(--bg);border:1px solid var(--br);text-align:center}
+  #nav button.on{background:var(--ac);border-color:var(--ac);color:var(--ac2)}
   .hero{padding-top:24px}
   .filters{grid-template-columns:1fr 1fr}
   .filters #q,.filters #loc{grid-column:span 2}
@@ -82,7 +89,8 @@ button:disabled{opacity:.6;cursor:wait}
 <body>
 <header><div class="wrap bar">
 <div class="logo"><span class="logo-mark" aria-hidden="true"><span class="logo-wrench">🔧</span><span class="logo-flag">🇰🇪</span></span><span class="logo-name">FundiLink</span></div>
-<nav id="nav">
+<button id="navToggle" class="nav-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="Open navigation menu"><span class="nav-toggle-icon" aria-hidden="true"></span><span>Menu</span></button>
+<nav id="nav" aria-label="Main navigation">
 <button data-v="find" class="on">Find a fundi</button>
 <button data-v="post">Post a job</button>
 <button data-v="jobs">Job board</button>
@@ -193,6 +201,7 @@ button:disabled{opacity:.6;cursor:wait}
 var TRADES=["Plumber","Electrician","Mason","Carpenter","Mechanic","Painter","Welder","Tiler"];
 var ICON={Plumber:"🚰",Electrician:"💡",Mason:"🧱",Carpenter:"🪚",Mechanic:"🔧",Painter:"🎨",Welder:"🔥",Tiler:"◻️"};
 var S={workers:[],jobs:[],bookings:[],users:[],user:null,csrf:""};
+var pendingContact=null;
 function $(i){return document.getElementById(i)}
 function notice(message,isError){$("notice").textContent=message||"";$("notice").classList.toggle("error",!!isError)}
 function api(resource,options){
@@ -250,9 +259,31 @@ dlg("<div class='row'><div class='av'>"+esc(w.name[0])+"</div><div><h3>"+esc(w.n
 "<p>"+esc(w.bio)+"</p><div>"+stars(avg(w))+" "+(w.reviews.length?avg(w).toFixed(1):"New")+"</div>"+
 "<p class='mu'>"+money(w.rate)+"/day · "+w.exp+" years · "+(w.verified?"<span class='ok'>ID & reference verified</span>":"Verification pending")+"</p>"+
 "<div>"+w.skills.map(function(k){return "<span class='tag'>"+esc(k)+"</span>"}).join("")+"</div>"+
-"<div class='acts'><a class='btn' href='tel:"+esc(w.phone)+"'>📞 Call</a><a class='btn o' href='https://wa.me/"+esc(waPhone(w.phone))+"' target='_blank' rel='noopener'>WhatsApp</a><button class='btn o' onclick='bookForm("+w.id+")'>Book now</button></div>"+
+"<div class='acts'>"+contactActions("worker",w.id,w.phone)+"<button class='btn o' onclick='bookForm("+w.id+")'>Book now</button></div>"+
 "<h4>Reviews</h4>"+(w.reviews.length?w.reviews.map(function(r){return "<div class='rev'>"+stars(r.s)+" "+esc(r.t)+"</div>"}).join(""):"<div class='mu'>No reviews yet.</div>"))}
 function waPhone(phone){var digits=String(phone||"").replace(/\D/g,"");return digits.indexOf("0")===0?"254"+digits.slice(1):digits}
+function contactActions(kind,id,phone){
+if(S.user&&phone)return "<a class='btn' href='tel:"+esc(phone)+"'>📞 Call</a><a class='btn o' href='https://wa.me/"+esc(waPhone(phone))+"' target='_blank' rel='noopener'>WhatsApp</a>";
+if(S.user)return "<span class='mu'>Contact details unavailable.</span>";
+return "<button class='btn' type='button' data-contact-method='call' data-contact-kind='"+kind+"' data-contact-id='"+Number(id)+"'>📞 Call</button><button class='btn o' type='button' data-contact-method='whatsapp' data-contact-kind='"+kind+"' data-contact-id='"+Number(id)+"'>WhatsApp</button>"
+}
+function requestContactSignIn(kind,id,method){
+if($("dlg").open)$("dlg").close();
+pendingContact={kind:kind,id:Number(id),method:method};
+notice("Sign in to continue to this contact.",true);
+go("account")
+}
+function resumePendingContact(){
+if(!pendingContact||!S.user)return false;
+var intent=pendingContact,item=intent.kind==="worker"?S.workers.filter(function(x){return x.id===intent.id})[0]:S.jobs.filter(function(x){return x.id===intent.id})[0];
+pendingContact=null;
+if(!item||!item.phone){notice("Contact details are unavailable for this listing.",true);return true}
+var isCall=intent.method==="call",name=esc(item.name),href=isCall?"tel:"+esc(item.phone):"https://wa.me/"+esc(waPhone(item.phone));
+var link="<a class='btn' href='"+href+"'"+(isCall?"":" target='_blank' rel='noopener'")+">"+(isCall?"📞 Continue to call":"Continue to WhatsApp")+"</a>";
+dlg("<h3>Continue to contact "+name+"</h3><p class='mu'>You are signed in. Use the button below to continue with your requested contact method.</p><div class='acts'>"+link+"</div>");
+notice("You are signed in. Your requested contact is ready.",false);
+return true
+}
 function bookForm(id){var w=S.workers.filter(function(x){return x.id===id})[0];
 if(!S.user||S.user.role!=="client"){notice("Sign in as a customer to request a booking.",true);go("account");return}
 dlg("<h3>Book "+esc(w.name)+"</h3><p class='mu'>Requesting as "+esc(S.user.name)+" · "+esc(S.user.phone)+"</p><form id='bf'><label>Date</label><input name='when' type='date' required><label>Job details</label><textarea name='desc' rows='3' required></textarea><div class='acts'><button class='btn' type='submit'>Send booking request</button></div></form>");
@@ -262,7 +293,7 @@ api("bookings",{method:"POST",body:{wid:id,when:f.get("when"),desc:f.get("desc")
 .catch(function(error){notice(error.message,true)})}}
 function renderJobs(){var t=$("jtrade").value;
 var l=S.jobs.filter(function(j){return!t||j.trade===t});
-$("jobList").innerHTML=l.length?l.map(function(j){return "<div class='card'><h3>"+ICON[j.trade]+" "+esc(j.trade)+" needed</h3><div class='mu'>📍 "+esc(j.loc)+" · 📅 "+esc(j.when)+"</div><p>"+esc(j.desc)+"</p><div class='mu'>Budget: "+(Number(j.budget)?money(j.budget):"Negotiable")+" · Posted by "+esc(j.name)+"</div><div class='acts'><a class='btn' href='tel:"+esc(j.phone)+"'>📞 Contact client</a></div></div>"}).join(""):"<p class='mu'>No open jobs for this trade.</p>"}
+$("jobList").innerHTML=l.length?l.map(function(j){return "<div class='card'><h3>"+ICON[j.trade]+" "+esc(j.trade)+" needed</h3><div class='mu'>📍 "+esc(j.loc)+" · 📅 "+esc(j.when)+"</div><p>"+esc(j.desc)+"</p><div class='mu'>Budget: "+(Number(j.budget)?money(j.budget):"Negotiable")+" · Posted by "+esc(j.name)+"</div><div class='acts'>"+contactActions("job",j.id,j.phone)+"</div></div>"}).join(""):"<p class='mu'>No open jobs for this trade.</p>"}
 $("jtrade").onchange=renderJobs;
 $("jobForm").onsubmit=function(e){e.preventDefault();var f=Object.fromEntries(new FormData(e.target));
 if(!S.user||S.user.role!=="client"){notice("Sign in as a customer before posting a job.",true);go("account");return}
@@ -272,7 +303,7 @@ $("joinForm").onsubmit=function(e){e.preventDefault();var f=Object.fromEntries(n
 if(S.user&&S.user.role!=="worker"){notice("Sign out of your customer account before creating a fundi account.",true);go("account");return}
 var request=S.user?api("workers",{method:"POST",body:f}):api("auth-register",{method:"POST",body:Object.assign({role:"worker"},f)});
 request.then(function(){e.target.reset();return refreshData()})
-.then(function(){trade="";chips();go("find");notice("Your fundi account is ready.",false)}).catch(function(error){notice(error.message,true)})};
+.then(function(){trade="";chips();if(resumePendingContact())return;go("find");notice("Your fundi account is ready.",false)}).catch(function(error){notice(error.message,true)})};
 function renderBook(){
 if(!S.user){$("bookList").innerHTML="<div class='card'><p>Sign in to see bookings linked to your account.</p><button class='btn' onclick='go(\"account\")'>Sign in or register</button></div>";return}
 if(!S.bookings.length){$("bookList").innerHTML="<p class='mu'>"+(S.user.role==="worker"?"No booking requests have been sent to your profile yet.":"No bookings yet. Find a fundi and tap Book.")+"</p>";return}
@@ -371,17 +402,30 @@ $("joinState").textContent=!loggedIn?"Create a fundi account to publish your pro
 }
 $("loginForm").onsubmit=function(e){e.preventDefault();var form=e.target,data=Object.fromEntries(new FormData(form));
 api("auth-login",{method:"POST",body:data}).then(function(){form.reset();return refreshData()})
-.then(function(){go(S.user&&S.user.role==="admin"?"admin":"book");notice("You are signed in.",false)}).catch(function(error){notice(error.message,true)})};
+.then(function(){if(resumePendingContact())return;go(S.user&&S.user.role==="admin"?"admin":"book");notice("You are signed in.",false)}).catch(function(error){notice(error.message,true)})};
 $("clientRegisterForm").onsubmit=function(e){e.preventDefault();var form=e.target,data=Object.fromEntries(new FormData(form));data.role="client";
 api("auth-register",{method:"POST",body:data}).then(function(){form.reset();return refreshData()})
-.then(function(){go("book");notice("Customer account created.",false)}).catch(function(error){notice(error.message,true)})};
+.then(function(){if(resumePendingContact())return;go("book");notice("Customer account created.",false)}).catch(function(error){notice(error.message,true)})};
 $("logoutBtn").onclick=function(){api("auth-logout",{method:"POST",body:{}}).then(function(){return refreshData()})
 .then(function(){go("find");notice("You have signed out.",false)}).catch(function(error){notice(error.message,true)})};
 function go(v){var targetView=v;
 document.querySelectorAll(".view").forEach(function(s){s.classList.toggle("on",s.id==="v-"+targetView)});
 document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v)});
 if(v==="jobs")renderJobs();if(v==="book"){renderBook();if(S.user)loadBookings().catch(function(){})}if(v==="find")renderW();if(v==="account")renderAccount();if(v==="admin"){if(!S.user||S.user.role!=="admin"){notice("Administrator sign-in is required.",true);targetView="account";document.querySelectorAll(".view").forEach(function(s){s.classList.toggle("on",s.id==="v-account")});renderAccount()}else{loadAdminDashboard().catch(function(){})}}if(v==="join")renderJoinState();window.scrollTo(0,0)}
-$("nav").onclick=function(e){if(e.target.dataset.v)go(e.target.dataset.v)};
+var navToggle=$("navToggle"),navBar=document.querySelector(".bar"),mainNav=$("nav");
+function setMobileNavOpen(open){
+var returnFocus=!open&&mainNav.contains(document.activeElement);
+navBar.classList.toggle("menu-open",open);
+navToggle.setAttribute("aria-expanded",open?"true":"false");
+navToggle.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
+if(returnFocus)navToggle.focus();
+}
+navToggle.onclick=function(){setMobileNavOpen(navToggle.getAttribute("aria-expanded")!=="true")};
+mainNav.onclick=function(e){var button=e.target.closest("button[data-v]");if(!button)return;go(button.dataset.v);setMobileNavOpen(false)};
+document.addEventListener("click",function(e){var button=e.target.closest("button[data-contact-method]");if(button)requestContactSignIn(button.dataset.contactKind,button.dataset.contactId,button.dataset.contactMethod)});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")setMobileNavOpen(false)});
+document.addEventListener("click",function(e){if(!navBar.contains(e.target))setMobileNavOpen(false)});
+window.addEventListener("resize",function(){if(window.innerWidth>680)setMobileNavOpen(false)});
 $("theme").onclick=function(e){e.preventDefault();var d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=dark?"light":"dark"};
 var t=new Date().toISOString().slice(0,10);document.querySelectorAll("input[type=date]").forEach(function(i){i.min=t});
 chips();notice("Connecting to the FundiLink backend…");refreshData().catch(function(){});
